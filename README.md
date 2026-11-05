@@ -1,16 +1,67 @@
-# React + Vite
+# Krzyżówka informatyczna
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Opis projektu
 
-Currently, two official plugins are available:
+Projekt przedstawia interaktywną krzyżówkę wykonaną przy użyciu biblioteki React oraz narzędzia Vite.
+Krzyżówka składa się z planszy o wymiarach 13 × 13 pól. Zawiera 10 haseł, które należy odgadnąć na podstawie przygotowanych definicji.
+Hasła zostały rozmieszczone poziomo i pionowo, a niektóre z nich przecinają się ze sobą.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Wykorzystane technologie
 
-## React Compiler
+- React
+- JavaScript
+- Vite
+- CSS
+- Vitest
+- React Testing Library
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Funkcjonalności
 
-## Expanding the Oxlint configuration
+- Wpisywanie liter do pól krzyżówki.
+- Automatyczne przechodzenie do kolejnego pola.
+- Wybieranie haseł poprzez kliknięcie definicji.
+- Podświetlanie aktywnego hasła.
+- Sprawdzanie poprawności wpisanych odpowiedzi.
+- Podświetlanie poprawnych odpowiedzi na zielono.
+- Podświetlanie błędnych odpowiedzi na czerwono.
+- Wyświetlanie kompletnego rozwiązania.
+- Czyszczenie całej planszy.
+- Licznik wypełnionych pól.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Uruchomienie projektu
+
+### 1. Pobranie projektu
+
+Sklonuj repozytorium:
+
+`git clone ADRES_REPOZYTORIUM`
+
+### 2. Instalacja zależności
+
+Przejdź do folderu projektu i wpisz:
+
+`npm install`
+
+### 3. Uruchomienie aplikacji
+
+`npm run dev`
+
+Aplikacja zostanie uruchomiona na lokalnym serwerze Vite.
+
+## Testowanie
+
+Projekt wykorzystuje Vitest oraz React Testing Library.
+
+Aby uruchomić testy jednostkowe, wpisz:
+
+`npm run test`
+
+Testy sprawdzają między innymi:
+
+- Wyświetlanie aplikacji.
+- Wyświetlanie definicji.
+- Działanie przycisków.
+- Walidację wpisywanych znaków.
+- Pokazywanie rozwiązania.
+- Czyszczenie planszy.
+- Podświetlanie aktywnego hasła.

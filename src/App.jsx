@@ -1,122 +1,393 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useRef } from "react";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const hasla = [
+    { nr: 1, slowo: "FUNKCJA", r: 0, c: 3, kierunek: "poziom" },
+    { nr: 2, slowo: "KOMPILATOR", r: 0, c: 6, kierunek: "pion" },
+    { nr: 3, slowo: "REACT", r: 1, c: 10, kierunek: "pion" },
+    { nr: 4, slowo: "SERWER", r: 2, c: 3, kierunek: "pion" },
+    { nr: 5, slowo: "PETLA", r: 3, c: 6, kierunek: "poziom" },
+    { nr: 6, slowo: "GIT", r: 5, c: 8, kierunek: "poziom" },
+    { nr: 7, slowo: "BŁĄD", r: 5, c: 12, kierunek: "pion" },
+    { nr: 8, slowo: "ZMIENNA", r: 6, c: 0, kierunek: "poziom" },
+    { nr: 9, slowo: "TABLICĄ", r: 7, c: 6, kierunek: "poziom" },
+    { nr: 10, slowo: "JAVASCRIPT", r: 9, c: 0, kierunek: "poziom" }
+  ];
+
+  const definicjePoziomo = [
+    "Wydzielony, wywoływalny fragment kodu (7)",
+    "Instrukcja powtarzająca fragment kodu (5)",
+    "System kontroli wersji (3)",
+    "Nazwane miejsce w pamięci na dane (7)",
+    "Uporządkowaną kolekcją elementów nazywamy (7)",
+    "Język skryptowy działający w przeglądarce (10)"
+  ];
+
+  const definicjePionowo = [
+    "Program tłumaczący kod źródłowy na kod maszynowy (10)",
+    "Biblioteka do budowania interfejsów od Meta (5)",
+    "Komputer udostępniający usługi w sieci (6)",
+    "Polska nazwa buga (4)"
+  ];
+
+  const [odpowiedzi, setOdpowiedzi] = useState({});
+  const [aktywneHaslo, setAktywneHaslo] = useState(null);
+  const [aktywnePole, setAktywnePole] = useState(null);
+  const [sprawdzone, setSprawdzone] = useState(false);
+
+  const pola = useRef({});
+
+  // Tworzenie planszy
+  const plansza = {};
+
+  hasla.forEach((haslo) => {
+
+    for (let i = 0; i < haslo.slowo.length; i++) {
+
+      let r = haslo.r;
+      let c = haslo.c;
+
+      if (haslo.kierunek === "poziom") {
+        c += i;
+      } else {
+        r += i;
+      }
+
+      let klucz = r + "-" + c;
+
+      if (!plansza[klucz]) {
+        plansza[klucz] = {
+          litera: haslo.slowo[i],
+          numer: i === 0 ? haslo.nr : null
+        };
+      } else if (i === 0) {
+        plansza[klucz].numer = haslo.nr;
+      }
+
+    }
+
+  });
+
+  // Sprawdzanie liter bez uwzględniania polskich znaków
+  function normalizuj(litera) {
+    return litera
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  // Wpisywanie liter
+  function wpiszLitere(e, r, c) {
+
+    let litera = e.target.value.toUpperCase();
+
+    litera = litera.replace(/[^A-ZĄĆĘŁŃÓŚŹŻ]/g, "");
+    litera = litera.slice(0, 1);
+
+    let klucz = r + "-" + c;
+
+    setOdpowiedzi({
+      ...odpowiedzi,
+      [klucz]: litera
+    });
+
+    setSprawdzone(false);
+
+    if (litera && aktywneHaslo !== null) {
+
+      let haslo = hasla[aktywneHaslo];
+
+      let index;
+
+      if (haslo.kierunek === "poziom") {
+        index = c - haslo.c;
+      } else {
+        index = r - haslo.r;
+      }
+
+      if (index < haslo.slowo.length - 1) {
+
+        let nextR = haslo.r;
+        let nextC = haslo.c;
+
+        if (haslo.kierunek === "poziom") {
+          nextC += index + 1;
+        } else {
+          nextR += index + 1;
+        }
+
+        let nextKey = nextR + "-" + nextC;
+
+        pola.current[nextKey]?.focus();
+
+      }
+
+    }
+
+  }
+
+  // Wybieranie hasła
+  function wybierzHaslo(index) {
+
+    setAktywneHaslo(index);
+
+    let haslo = hasla[index];
+
+    let klucz = haslo.r + "-" + haslo.c;
+
+    pola.current[klucz]?.focus();
+
+  }
+
+  // Wybieranie hasła po kliknięciu pola
+  function wybierzPole(r, c) {
+
+    let index = hasla.findIndex((haslo) => {
+
+      if (haslo.kierunek === "poziom") {
+
+        return r === haslo.r &&
+          c >= haslo.c &&
+          c < haslo.c + haslo.slowo.length;
+
+      }
+
+      return c === haslo.c &&
+        r >= haslo.r &&
+        r < haslo.r + haslo.slowo.length;
+
+    });
+
+    if (index !== -1) {
+      setAktywneHaslo(index);
+    }
+
+  }
+
+  // Sprawdzanie odpowiedzi
+  function sprawdz() {
+    setSprawdzone(true);
+  }
+
+  // Pokazywanie rozwiązania
+  function rozwiazanie() {
+
+    let noweOdpowiedzi = {};
+
+    Object.keys(plansza).forEach((klucz) => {
+      noweOdpowiedzi[klucz] = plansza[klucz].litera;
+    });
+
+    setOdpowiedzi(noweOdpowiedzi);
+    setSprawdzone(true);
+
+  }
+
+  // Czyszczenie planszy
+  function wyczysc() {
+
+    setOdpowiedzi({});
+    setSprawdzone(false);
+    setAktywneHaslo(null);
+    setAktywnePole(null);
+
+  }
+
+  // Sprawdzanie czy pole należy do aktywnego hasła
+  function czyAktywne(r, c) {
+
+    if (aktywneHaslo === null) return false;
+
+    let haslo = hasla[aktywneHaslo];
+
+    if (haslo.kierunek === "poziom") {
+
+      return r === haslo.r &&
+        c >= haslo.c &&
+        c < haslo.c + haslo.slowo.length;
+
+    }
+
+    return c === haslo.c &&
+      r >= haslo.r &&
+      r < haslo.r + haslo.slowo.length;
+
+  }
+
+  // Sprawdzanie poprawności pola
+  function czyPoprawna(klucz) {
+
+    return normalizuj(odpowiedzi[klucz] || "") ===
+      normalizuj(plansza[klucz].litera);
+
+  }
+
+  // Liczenie wypełnionych pól
+  let licznik = 0;
+
+  Object.keys(plansza).forEach((klucz) => {
+
+    if (odpowiedzi[klucz]) {
+      licznik++;
+    }
+
+  });
+
+  let liczbaPol = Object.keys(plansza).length;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+    <div className="aplikacja">
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <h1>Krzyżówka</h1>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <div className="glowna">
+
+        <div className="lewa">
+
+          <div className="plansza">
+
+            {Array.from({ length: 13 }, (_, r) => (
+
+              <div className="wiersz" key={r}>
+
+                {Array.from({ length: 13 }, (_, c) => {
+
+                  let klucz = r + "-" + c;
+                  let pole = plansza[klucz];
+
+                  if (!pole) {
+                    return <div className="puste" key={c}></div>;
+                  }
+
+                  let kolor = "";
+
+                  if (sprawdzone) {
+
+                    kolor = czyPoprawna(klucz)
+                      ? "poprawne"
+                      : "bledne";
+
+                  } else if (czyAktywne(r, c)) {
+
+                    kolor = "aktywne";
+
+                  }
+
+                  return (
+
+                    <div className={"pole " + kolor} key={c}>
+
+                      {pole.numer && (
+                        <span className="numer">
+                          {pole.numer}
+                        </span>
+                      )}
+
+                      <input
+                        ref={(el) => {
+                          pola.current[klucz] = el;
+                        }}
+                        maxLength="1"
+                        value={odpowiedzi[klucz] || ""}
+                        onChange={(e) => wpiszLitere(e, r, c)}
+                        onFocus={() => setAktywnePole(klucz)}
+                        onClick={() => wybierzPole(r, c)}
+                        className={
+                          aktywnePole === klucz
+                            ? "zaznaczone"
+                            : ""
+                        }
+                      />
+
+                    </div>
+
+                  );
+
+                })}
+
+              </div>
+
+            ))}
+
+          </div>
+
+          <div className="przyciski">
+
+            <button onClick={sprawdz}>
+              Sprawdź
+            </button>
+
+            <button onClick={rozwiazanie}>
+              Pokaż rozwiązanie
+            </button>
+
+            <button onClick={wyczysc}>
+              Wyczyść
+            </button>
+
+          </div>
+
+          <div className="licznik">
+            {licznik}/{liczbaPol}
+          </div>
+
+        </div>
+
+        <div className="definicje">
+
+          <h2>Poziomo</h2>
+
+          {[0, 4, 5, 7, 8, 9].map((nr, index) => (
+
+            <div
+              className={
+                aktywneHaslo === nr
+                  ? "definicja wybrana"
+                  : "definicja"
+              }
+              key={nr}
+              onClick={() => wybierzHaslo(nr)}
+            >
+
+              <strong>{nr + 1}.</strong>
+              <span>{definicjePoziomo[index]}</span>
+
+            </div>
+
+          ))}
+
+          <h2 className="pionowo">Pionowo</h2>
+
+          {[1, 2, 3, 6].map((nr, index) => (
+
+            <div
+              className={
+                aktywneHaslo === nr
+                  ? "definicja wybrana"
+                  : "definicja"
+              }
+              key={nr}
+              onClick={() => wybierzHaslo(nr)}
+            >
+
+              <strong>{nr + 1}.</strong>
+              <span>{definicjePionowo[index]}</span>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
+
 }
 
-export default App
+export default App;
