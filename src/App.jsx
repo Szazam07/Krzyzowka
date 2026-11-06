@@ -39,7 +39,6 @@ function App() {
 
   const pola = useRef({});
 
-  // Tworzenie planszy
   const plansza = {};
 
   hasla.forEach((haslo) => {
@@ -70,7 +69,6 @@ function App() {
 
   });
 
-  // Sprawdzanie liter bez uwzględniania polskich znaków
   function normalizuj(litera) {
     return litera
       .toUpperCase()
@@ -78,7 +76,6 @@ function App() {
       .replace(/[\u0300-\u036f]/g, "");
   }
 
-  // Wpisywanie liter
   function wpiszLitere(e, r, c) {
 
     let litera = e.target.value.toUpperCase();
@@ -128,7 +125,6 @@ function App() {
 
   }
 
-  // Wybieranie hasła
   function wybierzHaslo(index) {
 
     setAktywneHaslo(index);
@@ -141,7 +137,6 @@ function App() {
 
   }
 
-  // Wybieranie hasła po kliknięciu pola
   function wybierzPole(r, c) {
 
     let index = hasla.findIndex((haslo) => {
@@ -166,12 +161,10 @@ function App() {
 
   }
 
-  // Sprawdzanie odpowiedzi
   function sprawdz() {
     setSprawdzone(true);
   }
 
-  // Pokazywanie rozwiązania
   function rozwiazanie() {
 
     let noweOdpowiedzi = {};
@@ -185,7 +178,6 @@ function App() {
 
   }
 
-  // Czyszczenie planszy
   function wyczysc() {
 
     setOdpowiedzi({});
@@ -195,7 +187,6 @@ function App() {
 
   }
 
-  // Sprawdzanie czy pole należy do aktywnego hasła
   function czyAktywne(r, c) {
 
     if (aktywneHaslo === null) return false;
@@ -216,7 +207,6 @@ function App() {
 
   }
 
-  // Sprawdzanie poprawności pola
   function czyPoprawna(klucz) {
 
     return normalizuj(odpowiedzi[klucz] || "") ===
@@ -224,7 +214,6 @@ function App() {
 
   }
 
-  // Liczenie wypełnionych pól
   let licznik = 0;
 
   Object.keys(plansza).forEach((klucz) => {
